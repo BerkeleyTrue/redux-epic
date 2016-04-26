@@ -2,7 +2,7 @@ import { Observable, Subject } from 'rx';
 import test from 'tape';
 import { spy } from 'sinon';
 import { applyMiddleware, createStore } from 'redux';
-import createEpic from '../src/create-epic-middleware';
+import createEpic from '../src/create-epic';
 
 const setup = (saga, spy) => {
   const reducer = (state = 0) => state;
