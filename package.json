@@ -51,8 +51,8 @@
   },
   "dependencies": {
     "debug": "^2.2.0",
-    "react": "^15.0.1",
-    "react-dom": "^15.0.1",
+    "react": "^15.0.0 || ^0.14.3",
+    "react-dom": "^15.0.0 || ^0.14.3",
     "react-pure-component": "^0.1.0",
     "rx": "^4.1.0"
   }
