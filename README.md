@@ -25,7 +25,7 @@ You then dispatch actions normally and the sagas react to those actions.
 
 While Redux-Saga is awesome and a source of inspiration for this library,
 I've never been sold on generators themselves. They are a great way to create
-long lived iterables (you pull data out of them), it just doesn't make since
+long lived iterables (you pull data out of them), it just doesn't make sense
 when you want something to push data to you instead. Iterables (generators create iterables)
 are by definition not reactive but interactive. They require something to be
 constantly polling (pulling data out) them until they complete.
