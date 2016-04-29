@@ -1,3 +1,4 @@
+import invariant from 'invariant';
 import { CompositeDisposable, Observable, Subject } from 'rx';
 
 // Saga(
@@ -44,14 +45,18 @@ export default function createEpic(dependencies, ...sagas) {
       lifecycle = new Subject();
       const sagaSubscription = Observable
         .from(sagas)
+        // need to test for pass-through sagas
         .map(saga => saga(action$, getState, dependencies))
         .doOnNext(result$ => {
-          if (!Observable.isObservable(result$)) {
-            throw new Error('saga should returned an observable');
-          }
-          if (result$ === action$) {
-            throw new Error('Saga returned original action stream!');
-          }
+          invariant(
+            Observable.isObservable(result$),
+            'saga should returned an observable but got %s',
+            result$
+          );
+          invariant(
+            result$ !== action$,
+            'saga should not be an identity function'
+          );
         })
         .mergeAll()
         .filter(action => action && typeof action.type === 'string')

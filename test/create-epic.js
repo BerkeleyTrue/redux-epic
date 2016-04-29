@@ -201,3 +201,17 @@ test('long lived saga', t => {
   });
   store.dispatch({ type: 'start-tick' });
 });
+
+test('throws', t => {
+  const tr8tr = () => 'traitor!';
+  const identity = action$ => action$;
+  t.plan(2);
+  t.throws(
+    () => setup(tr8tr),
+    'epicMiddleware should throw sagas that do not return observables'
+  );
+  t.throws(
+    () => setup(identity),
+    'epicMiddleware should throw sagas return the original action observable'
+  );
+});

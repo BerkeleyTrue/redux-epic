@@ -1,7 +1,9 @@
+import React from 'react';
 import { helpers } from 'rx';
 import { createElement } from 'react';
-import PureComponent from 'react-pure-render/component';
+import shallowCompare from 'react-addons-shallow-compare';
 import debug from 'debug';
+import invariant from 'invariant';
 
 // // Using rtype signatures
 // interface Action {
@@ -31,8 +33,6 @@ import debug from 'debug';
 
 
 const log = debug('redux-epic:contain');
-
-const __DEV__ = process.env.NODE_ENV !== 'production';
 const { isFunction } = helpers;
 
 export default function contain(options = {}, Component) {
@@ -56,16 +56,15 @@ export default function contain(options = {}, Component) {
 
   function runAction(props, context, action) {
     const actionArgs = getActionArgs(props, context);
-    if (__DEV__ && !Array.isArray(actionArgs)) {
-      throw new TypeError(
-        `${name} getActionArgs should return an array but got ${actionArgs}`
-      );
-    }
+    invariant(
+      Array.isArray(actionArgs),
+      `${name} getActionArgs should return an array but got ${actionArgs}`
+    );
     return action.apply(null, actionArgs);
   }
 
 
-  return class Container extends PureComponent {
+  return class Container extends React.Component {
     static displayName = `Container(${name})`;
 
     componentWillMount() {
@@ -82,12 +81,11 @@ export default function contain(options = {}, Component) {
       action = props[options.fetchAction];
       isActionable = typeof action === 'function';
 
-      if (__DEV__ && !isActionable) {
-        throw new Error(
-          `${options.fetchAction} should return a function but got ${action}.
+      invariant(
+        isActionable,
+        `${options.fetchAction} should return a function but got ${action}.
           Check the fetch options for ${name}.`
-        );
-      }
+      );
 
       runAction(
         props,
@@ -111,6 +109,11 @@ export default function contain(options = {}, Component) {
         action
       );
     }
+
+    shouldComponentUpdate(nextProps, nextState) {
+      return shallowCompare(this, nextProps, nextState);
+    }
+
     render() {
       return createElement(
         Component,
