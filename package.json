@@ -1,6 +1,6 @@
 {
   "name": "redux-epic",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Better Redux Async and Prefetching",
   "main": "lib/index.js",
   "directories": {
