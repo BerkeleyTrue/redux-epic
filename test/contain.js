@@ -1,5 +1,5 @@
 import test from 'tape';
-import contain from '../src/contain';
+import { contain } from '../src';
 
 test('contain', t => {
   t.isEqual(

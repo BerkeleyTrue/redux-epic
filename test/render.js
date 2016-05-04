@@ -1,5 +1,5 @@
 import test from 'tape';
-import render from '../src/render';
+import { render } from '../src';
 
 test('render', t => {
   t.isEqual(

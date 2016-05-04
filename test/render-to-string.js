@@ -1,5 +1,5 @@
 import test from 'tape';
-import renderToString from '../src/render-to-string';
+import { renderToString } from '../src';
 
 test('renderToString', t => {
   t.isEqual(
