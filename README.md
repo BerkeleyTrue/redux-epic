@@ -65,7 +65,7 @@ around your React Component. Should be combined with Redux's `connect`.
 ```js
 interface Options {
   fetchAction?: ActionCreator,
-  getActionArgs?(props: Object, context: Object) => [],
+  getActionArgs?(props: Object, context: Object) => [ ...Any ],
   isPrimed?(props: Object, context: Object) => Boolean,
   shouldRefetch?(
     props: Object,
@@ -87,29 +87,24 @@ Creates an epic middleware to be passed into Redux createStore
 
 ```js
 Saga(
-  action$: Observable[Action],
+  actions$: Observable[ ...Action ],
   getState: () => Object,
   dependencies: Object
-) => Observable[Action]
+) => Observable[ ...Action|Void ]
 
 interface EpicMiddleware {
   ({
     dispatch: Function,
     getState: Function
-  }) => next: Function => action: Action => Action,
+  }) => ( (next: Function) => (action: Action) => Action ),
   // used to dispose sagas
-  dispose() => Void,
-
-  // the following are internal methods
-  // they may change without warning
-  restart() => Void,
-  end() => Void,
-  subscribe() => Disposable,
-  subscribeOnCompleted() => Disposable,
-
+  dispose() => Void
 }
 
-createEpic(depndencies: Object|Saga, ...sagas: Saga[]) => EpicMiddleware
+interface createEpic {
+  (dependencies: Object, ...sagas: [ Saga... ]) => EpicMiddleware
+  (...sagas: [ Saga... ]) => EpicMiddleware
+}
 ```
 
 ### render-to-string
@@ -127,7 +122,7 @@ renderToString(Component: ReactComponent, epicMiddleware: EpicMiddleware) => Obs
 Optional: Wraps `react-doms` render method in an observable.
 
 ```js
-render(Component: ReactComponent, DomContainer: DOMNode) => Observable[RootInstance]
+render(Component: ReactComponent, DomContainer: DOMNode) => Observable[ RootInstance ]
 ```
 
 ## What are Observables?
@@ -210,3 +205,10 @@ export function aboutRouter(app) {
   });
 }
 ```
+
+## Previous Art
+
+This library is inspired by the following
+
+* [Redux-Saga](https://github.com/yelouafi/redux-saga): Sagas built using generators
+* [Redux-Saga-RxJS](https://github.com/salsita/redux-saga-rxjs): Sagas using RxJS (No longer maintained)
