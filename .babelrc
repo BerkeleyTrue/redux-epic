@@ -11,7 +11,7 @@
         "test": {
             "sourceMaps": "inline",
             "plugins": [
-                [ "__coverage__", { "only": "./src" } ]
+                [ "istanbul" ]
             ]
         },
         "production": {
