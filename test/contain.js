@@ -1,12 +1,11 @@
-import test from 'tape';
+import test from 'ava';
 import { contain } from '../src';
 
 test('contain', t => {
-  t.isEqual(
+  t.is(
     typeof contain,
     'function',
     'contain is a function'
   );
   t.pass('no tests yet');
-  t.end();
 });

@@ -1,12 +1,11 @@
-import test from 'tape';
+import test from 'ava';
 import { render } from '../src';
 
 test('render', t => {
-  t.isEqual(
+  t.is(
     typeof render,
     'function',
     'render is a function'
   );
   t.pass('no tests yet');
-  t.end();
 });
