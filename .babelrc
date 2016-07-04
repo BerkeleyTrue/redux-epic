@@ -4,7 +4,20 @@
         "react",
         "stage-0"
     ],
-    "plugins": [
-        "babel-plugin-dev-expression"
-    ]
+    "ignore": [
+        "test/*.js"
+    ],
+    "env": {
+        "test": {
+            "sourceMaps": "inline",
+            "plugins": [
+                [ "__coverage__", { "only": "./src" } ]
+            ]
+        },
+        "production": {
+            "plugins": [
+                "babel-plugin-dev-expression"
+            ]
+        }
+    }
 }

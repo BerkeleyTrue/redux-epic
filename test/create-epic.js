@@ -1,5 +1,5 @@
 import { Observable, Subject } from 'rx';
-import test from 'tape';
+import test from 'ava';
 import { spy } from 'sinon';
 import { applyMiddleware, createStore } from 'redux';
 import { createEpic } from '../src';
@@ -27,151 +27,161 @@ test('createEpic', t => {
   const epicMiddleware = createEpic(
     action$ => action$.map({ type: 'foo' })
   );
-  t.equal(
+  t.is(
     typeof epicMiddleware,
     'function',
     'epicMiddleware is a function'
   );
-  t.equal(
+  t.is(
     typeof epicMiddleware.subscribe,
     'function',
     'epicMiddleware has a subscription method'
   );
-  t.equal(
+  t.is(
     typeof epicMiddleware.subscribeOnCompleted,
     'function',
     'epicMiddleware has a subscribeOnCompleted method'
   );
-  t.equal(
+  t.is(
     typeof epicMiddleware.end,
     'function',
     'epicMiddleware does have an end method'
   );
-  t.equal(
+  t.is(
     typeof epicMiddleware.restart,
     'function',
     'epicMiddleware does have a restart method'
   );
-  t.equal(
+  t.is(
     typeof epicMiddleware.dispose,
     'function',
     'epicMiddleware does have a dispose method'
   );
-  t.end();
 });
 
 test('dispatching actions', t => {
   const reducer = spy((state = 0) => state);
   const { store } = setup(null, reducer);
   store.dispatch({ type: 'foo' });
-  t.equal(reducer.callCount, 4, 'reducer is called four times');
-  t.assert(
+  t.is(reducer.callCount, 4, 'reducer is called four times');
+  t.true(
     reducer.getCall(1).calledWith(0, { type: 'foo' }),
     'reducer called with initial action'
   );
-  t.assert(
+  t.true(
     reducer.getCall(2).calledWith(0, { type: 'bar' }),
     'reducer was called with saga action'
   );
-  t.assert(
+  t.true(
     reducer.getCall(3).calledWith(0, { type: 'baz' }),
     'second saga responded to action from first saga'
   );
-  t.end();
 });
 
-test('lifecycle', t => {
-  t.test('subscribe', t => {
-    const { epicMiddleware } = setup();
-    const subscription = epicMiddleware.subscribeOnCompleted(() => {});
-    t.assert(
-      subscription,
-      'subscribe did return a disposable'
-    );
-    t.isEqual(
-      typeof subscription.dispose,
-      'function',
-      'disposable does have a dispose method'
-    );
-    t.doesNotThrow(
-      () => subscription.dispose(),
-      'disposable is disposable'
-    );
+test('lifecycle subscribe', t => {
+  const { epicMiddleware } = setup();
+  const subscription = epicMiddleware.subscribe(() => {});
+  const subscription2 = epicMiddleware.subscribeOnCompleted(() => {});
+  t.is(
+    typeof subscription,
+    'object',
+    'subscribe did return a disposable'
+  );
+  t.is(
+    typeof subscription.dispose,
+    'function',
+    'disposable does have a dispose method'
+  );
+  t.notThrows(
+    () => subscription.dispose(),
+    'disposable is disposable'
+  );
+  t.is(
+    typeof subscription2,
+    'object',
+    'subscribe did return a disposable'
+  );
+  t.is(
+    typeof subscription2.dispose,
+    'function',
+    'disposable does have a dispose method'
+  );
+  t.notThrows(
+    () => subscription2.dispose(),
+    'disposable is disposable'
+  );
+});
+
+test.cb('lifecycle end', t => {
+  const result$ = new Subject();
+  const { epicMiddleware } = setup(() => result$);
+  epicMiddleware.subscribeOnCompleted(() => {
+    t.pass('all sagas completed');
     t.end();
   });
+  epicMiddleware.end();
+  t.pass('saga still active');
+  result$.onCompleted();
+});
 
-  t.test('end', t => {
-    const result$ = new Subject();
-    const { epicMiddleware } = setup(() => result$);
-    epicMiddleware.subscribeOnCompleted(() => {
-      t.pass('all sagas completed');
-      t.end();
-    });
-    epicMiddleware.end();
-    t.pass('saga still active');
-    result$.onCompleted();
+test('lifecycle disposable', t => {
+  const result$ = new Subject();
+  const { epicMiddleware } = setup(() => result$);
+  t.plan(2);
+  epicMiddleware.subscribeOnCompleted(() => {
+    t.fail('all sagas completed');
   });
-
-  t.test('disposable', t => {
-    const result$ = new Subject();
-    const { epicMiddleware } = setup(() => result$);
-    t.plan(2);
-    epicMiddleware.subscribeOnCompleted(() => {
-      t.fail('all sagas completed');
-    });
-    t.assert(
-      result$.hasObservers(),
-      'saga is observed by epicMiddleware'
-    );
-    epicMiddleware.dispose();
-    t.false(
-      result$.hasObservers(),
-      'watcher has no observers after epicMiddleware is disposed'
-    );
-  });
+  t.true(
+    result$.hasObservers(),
+    'saga is observed by epicMiddleware'
+  );
+  epicMiddleware.dispose();
+  t.false(
+    result$.hasObservers(),
+    'watcher has no observers after epicMiddleware is disposed'
+  );
 });
 
 test('restart', t => {
   const reducer = spy((state = 0) => state);
   const { epicMiddleware, store } = setup(null, reducer);
   store.dispatch({ type: 'foo' });
-  t.assert(
+  t.true(
     reducer.getCall(1).calledWith(0, { type: 'foo' }),
     'reducer called with initial dispatch'
   );
-  t.assert(
+  t.true(
     reducer.getCall(2).calledWith(0, { type: 'bar' }),
     'reducer called with saga action'
   );
-  t.assert(
+  t.true(
     reducer.getCall(3).calledWith(0, { type: 'baz' }),
     'second saga responded to action from first saga'
   );
   epicMiddleware.end();
-  t.equal(reducer.callCount, 4, 'saga produced correct amount of actions');
+  t.is(reducer.callCount, 4, 'saga produced correct amount of actions');
   epicMiddleware.restart();
   store.dispatch({ type: 'foo' });
-  t.equal(
+  t.is(
     reducer.callCount,
     7,
     'saga restart and produced correct amount of actions'
   );
-  t.assert(
+  t.true(
     reducer.getCall(4).calledWith(0, { type: 'foo' }),
     'reducer called with second dispatch'
   );
-  t.assert(
+  t.true(
     reducer.getCall(5).calledWith(0, { type: 'bar' }),
     'reducer called with saga reaction'
   );
-  t.assert(
+  t.true(
     reducer.getCall(6).calledWith(0, { type: 'baz' }),
     'second saga responded to action from first saga'
   );
-  t.end();
 });
 
-test('long lived saga', t => {
+test.cb('long lived saga', t => {
   let count = 0;
   const tickSaga = action$ => action$
     .filter(({ type }) => type === 'start-tick')
@@ -190,7 +200,7 @@ test('long lived saga', t => {
     }
   });
   epicMiddleware.subscribeOnCompleted(() => {
-    t.equal(
+    t.is(
       count,
       5,
       'saga dispatched correct amount of ticks'
@@ -208,10 +218,24 @@ test('throws', t => {
   t.plan(2);
   t.throws(
     () => setup(tr8tr),
+    null,
     'epicMiddleware should throw sagas that do not return observables'
   );
   t.throws(
     () => setup(identity),
+    null,
     'epicMiddleware should throw sagas return the original action observable'
   );
+});
+
+test('dependencies', t => {
+  t.plan(1);
+  const myDep = {};
+  const reducer = (state = 0) => state;
+  const saga = (actions$, getState, deps) => {
+    t.is(deps.myDep, myDep);
+    return Observable.just(null);
+  };
+  const epicMiddleware = createEpic({ myDep }, saga);
+  createStore(reducer, 0, applyMiddleware(epicMiddleware));
 });
