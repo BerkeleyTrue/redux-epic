@@ -35,90 +35,97 @@ import invariant from 'invariant';
 const log = debug('redux-epic:contain');
 const { isFunction } = helpers;
 
-export default function contain(options = {}, Component) {
-  /* istanbul ignore else */
-  if (!Component) {
-    return contain.bind(null, options);
-  }
+export default function contain(options = {}) {
+  return Component => {
+    const name = Component.displayName || 'Anon Component';
+    let action;
+    let isActionable = false;
+    let hasRefetcher = isFunction(options.shouldRefetch);
+    const getActionArgs = isFunction(options.getActionArgs) ?
+      options.getActionArgs :
+      (() => []);
 
-  let action;
-  let isActionable = false;
-  let hasRefetcher = isFunction(options.shouldRefetch);
-  const getActionArgs = isFunction(options.getActionArgs) ?
-    options.getActionArgs :
-    (() => []);
+    const isPrimed = isFunction(options.isPrimed) ?
+      options.isPrimed :
+      (() => false);
 
-  const isPrimed = isFunction(options.isPrimed) ?
-    options.isPrimed :
-    (() => false);
-
-  const name = Component.displayName || 'Anon Component';
-
-  function runAction(props, context, action) {
-    const actionArgs = getActionArgs(props, context);
-    invariant(
-      Array.isArray(actionArgs),
-      `${name} getActionArgs should return an array but got ${actionArgs}`
-    );
-    return action.apply(null, actionArgs);
-  }
-
-
-  return class Container extends React.Component {
-    static displayName = `Container(${name})`;
-
-    componentWillMount() {
-      const { props, context } = this;
-      if (!options.fetchAction) {
-        log(`${name} has no fetch action defined`);
-        return;
-      }
-      if (isPrimed(this.props, this.context)) {
-        log(`${name} container is primed`);
-        return;
-      }
-
-      action = props[options.fetchAction];
-      isActionable = typeof action === 'function';
-
+    function runAction(props, context, action) {
+      const actionArgs = getActionArgs(props, context);
       invariant(
-        isActionable,
-        `${options.fetchAction} should return a function but got ${action}.
-          Check the fetch options for ${name}.`
+        Array.isArray(actionArgs),
+        `
+          ${name} getActionArgs should always return an array
+          but got ${actionArgs}. check the render method of ${name}
+        `
       );
-
-      runAction(
-        props,
-        context,
-        action
-      );
+      return action.apply(null, actionArgs);
     }
 
-    componentWillReceiveProps(nextProps, nextContext) {
-      if (
-        !isActionable ||
-        !hasRefetcher ||
-        !options.shouldRefetch(this.props, nextProps, this.context, nextContext)
-      ) {
-        return;
+
+    return class Container extends React.Component {
+      static displayName = `Container(${name})`;
+
+      componentWillMount() {
+        const { props, context } = this;
+        const fetchAction = options.fetchAction;
+        if (!options.fetchAction) {
+          log(`Contain(${name}) has no fetch action defined`);
+          return;
+        }
+        if (isPrimed(this.props, this.context)) {
+          log(`contain(${name}) is primed`);
+          return;
+        }
+
+        action = props[options.fetchAction];
+        isActionable = typeof action === 'function';
+
+        invariant(
+          isActionable,
+          `
+            ${fetchAction} should be a function on Contain(${name})'s props
+            but found ${action}. Check the fetch options for ${name}.
+          `
+        );
+
+        runAction(
+          props,
+          context,
+          action
+        );
       }
 
-      runAction(
-        nextProps,
-        nextContext,
-        action
-      );
-    }
+      componentWillReceiveProps(nextProps, nextContext) {
+        if (
+          !isActionable ||
+          !hasRefetcher ||
+          !options.shouldRefetch(
+            this.props,
+            nextProps,
+            this.context,
+            nextContext
+          )
+        ) {
+          return;
+        }
 
-    shouldComponentUpdate(nextProps, nextState) {
-      return shallowCompare(this, nextProps, nextState);
-    }
+        runAction(
+          nextProps,
+          nextContext,
+          action
+        );
+      }
 
-    render() {
-      return createElement(
-        Component,
-        this.props
-      );
-    }
+      shouldComponentUpdate(nextProps, nextState) {
+        return shallowCompare(this, nextProps, nextState);
+      }
+
+      render() {
+        return createElement(
+          Component,
+          this.props
+        );
+      }
+    };
   };
 }

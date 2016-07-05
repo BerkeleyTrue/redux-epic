@@ -29,7 +29,14 @@
     ],
     "require": [
       "babel-register"
-    ]
+    ],
+    "babel": {
+      "presets": [
+        "es2015",
+        "react",
+        "stage-0"
+      ]
+    }
   },
   "repository": {
     "type": "git",
@@ -68,6 +75,7 @@
     "eslint-plugin-react": "^5.0.1",
     "eslint-tap": "^1.1.0",
     "nyc": "^6.6.1",
+    "react-addons-test-utils": "^15.2.0",
     "redux": "^3.5.2",
     "sinon": "^1.17.3"
   },
