@@ -74,7 +74,7 @@
     "eslint": "^3.0.0",
     "eslint-plugin-react": "^5.0.1",
     "eslint-tap": "^1.1.0",
-    "nyc": "^6.6.1",
+    "nyc": "^7.0.0",
     "react-addons-test-utils": "^15.2.0",
     "redux": "^3.5.2",
     "sinon": "^1.17.3"
