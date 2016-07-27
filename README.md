@@ -79,7 +79,7 @@ export default function tickSaga(actions$) {
       return fetchUser(`/api/user/${userId}`)
         // turn the result of the ajax request
         // into an action
-        .map(user => { type: 'UPDATE_USER', payload: { user: user }})
+        .map(user => { return { type: 'UPDATE_USER', payload: { user: user } }; })
         // handle request errors with another action creator
         .catch(error => Observable.just({ type: 'FETCH_USER_ERROR', error: error }));
     });
