@@ -119,3 +119,60 @@ This library is inspired by the following
 
 * [Redux-Saga](https://github.com/yelouafi/redux-saga): Sagas built using generators
 * [Redux-Saga-RxJS](https://github.com/salsita/redux-saga-rxjs): Sagas using RxJS (No longer maintained)
+
+## Redux-Observable
+
+It's come to my attention the recent changes to the library [redux-observable](https://github.com/redux-observable/redux-observable).
+
+Initially redux-observable was very different from redux-epic. They took the same path as redux-thunk, redux-promise, and others where the observable (or promise, or function, or whatever) goes through the dispatch. This was distasteful to me, which is why I went the same route as redux-saga and redux-saga-rxjs, using middleware to intercept and dispatch actions in a fashion that fits the idioms of both Redux and Rx.
+
+It looks like they independently came to the same conclusion in https://github.com/redux-observable/redux-observable/pull/55 and https://github.com/redux-observable/redux-observable/pull/67 and switched to an identical model as mine, even the same name! It's great that we both came to the same conclusions and validates my initial thoughts.
+
+So, what is still different between redux-epic and redux-observable?
+
+* First class support for SSR
+* Universal (read: isomorphic) JavaScript First Design
+* Ability to inject dependencies
+* Use of Rx instead of RxJS
+* Disposable Epics
+* React Centric
+
+### First Class Support for Server Side Rendering
+
+There doesn't seem to be a way for the user to tell the epic (which manages observables internally) to end or completed, which is a requirement if you have a long-lived saga living with data fetching sagas. If a long-lived saga does not complete it's hard to determine if all my data fetching sagas have completed.
+
+When you can tell if all saga's are completed, you can create a simple observable for server side rendering that knows when all the data is fetched, the store is hydrated, and the app is ready to be rendered to a string.
+
+Then you leave it up to the user to call onCompleted on the epic so that there is a proper cleanup happening.
+
+### Universal JavaScript First Design
+
+This is an issue with most libraries built around React/Redux. The library may not be built with the idea of Universal JavaScript. What does that mean in the context of this library? The library was built knowing that the code may run in either Node.js or a browser and that there are functions that mirror each others API for both server and client side when the environment is important.
+
+In redux-epic, these are the `render` and `renderToString` functions. While you don't need to use these functions to use redux-epic, it was created with the idea that you would want to use them to support SSR'ing.
+
+This is not to say that redux-observable does not support SSR, but that it just was not built initially with that idea.
+
+### Dependency injection
+
+As a user, I want to be able to create a dependency per server request, not just once the library is created on the client. createEpic allows you to pass in an object that is then passed to each individual saga.
+
+This gives me the option to pass in a fully contextualized or instantiated object on the client and a mock on the server and not have to worry about detecting the environment in the individual sagas.
+
+### Rx instead of RxJS
+
+This is not that big of a deal, but there are difference in operators and how the library is built. I'm concerned that RxJS (Rx@5) might never be released as Rx (Rx@4) and we end up with a Python 2/3 situation. I build this library to use at @FreeCodeCamp and it's being used there today with Rx. I can't justify switching to RxJS until I know what's going to happen to Rx.
+
+Once RxJS is out of beta and has fully replaced Rx then this library will move over.
+
+I am also willing to make this library compatible with all Observable libraries in the same way that CycleJs is now. I want to do it in such a way that wouldn't disrupt FreeCodeCamp's codebase significantly.
+
+### Disposable Epics
+
+I don't see this in their codebase and this goes back to Universal JavaScript First design. Disposable epics don't matter much if you are only designing for the client, but if you are server side rendering, you want to know that a proper cleanup is happening per request.
+
+### React Centric
+
+I intentionally built this library around React. That's not to say you couldn't use this library without React, you can still use the `createEpic` function without importing anything React specific. Redux-observable seems to be build with the idea of being used with any UI library.
+
+I will at some point extract the React specific stuff, like I did with ThunderCat.JS, but decided it would be a premature optimization doing it now.
