@@ -71,7 +71,7 @@
     "babel-runtime": "^6.6.1",
     "coveralls": "^2.11.9",
     "enzyme": "^2.3.0",
-    "eslint": "^3.0.0",
+    "eslint": "^3.9.0",
     "eslint-plugin-react": "^5.0.1",
     "eslint-tap": "^1.1.0",
     "nyc": "^7.1.0",
