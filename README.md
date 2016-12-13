@@ -11,7 +11,7 @@ There are currently two different modes of handling side-effects in Redux. The
 first is to dispatch actions that are functions or actions that contain some sort
 of data structure. Here are some common examples:
 
-* [redux-thunks](https://github.com/gaearon/redux-thunk): dispatch action creators (functions) instead of plain action objects
+* [redux-thunk](https://github.com/gaearon/redux-thunk): dispatch action creators (functions) instead of plain action objects
 * [redux-promise](https://github.com/acdlite/redux-promise): dispatch promises(or actions containing promises) that are converted to actions
 
 The downside of these two libraries: you are no longer dispatching plain
