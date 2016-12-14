@@ -234,8 +234,52 @@ test('dependencies', t => {
   const reducer = (state = 0) => state;
   const saga = (actions$, getState, deps) => {
     t.is(deps.myDep, myDep);
-    return Observable.just(null);
+    return Observable.empty();
   };
   const epicMiddleware = createEpic({ myDep }, saga);
   createStore(reducer, 0, applyMiddleware(epicMiddleware));
+});
+
+test('warn about second argument of epic', t => {
+  t.plan(2);
+  const warningSpy = spy(console, 'error');
+  const epic = (actions, getState) => {
+    getState();
+    getState();
+    return Observable.of({ type: 'foo' });
+  };
+  const epicMiddleware = createEpic(epic);
+  const dispatch = x => x;
+  const getState = () => 4;
+  epicMiddleware({ dispatch, getState })(x => x)({ type: 'foo' });
+  epicMiddleware.end();
+  t.true(
+    warningSpy.calledOnce,
+    'warning was called'
+  );
+  t.true(
+    (/mock store/g).test(warningSpy.getCall(0).args[0]),
+    'warning was called with message'
+  );
+  console.error.restore();
+});
+
+test('warn when non-action elements are sent', t => {
+  t.plan(2);
+  const warningSpy = spy(console, 'error');
+  const nullEpic = () => Observable.of(null, null);
+  const epicMiddleware = createEpic(nullEpic);
+  const dispatch = x => x;
+  const getState = () => 4;
+  epicMiddleware({ dispatch, getState })(x => x)({ type: 'foo' });
+  epicMiddleware.end();
+  t.true(
+    warningSpy.calledOnce,
+    'warning was called'
+  );
+  t.true(
+    (/pass null to the dispatch/g).test(warningSpy.getCall(0).args[0]),
+    'warning was called with message'
+  );
+  console.error.restore();
 });

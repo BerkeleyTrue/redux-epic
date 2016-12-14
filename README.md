@@ -5,6 +5,11 @@
 Redux-Epic is a library built to do complex/async side-effects and
 server side rendering(SSR) data pre-fetching using RxJS.
 
+#### NOTE: 
+With the release of RxJS@5, I'm recommending everyone move to [redux-observable](https://github.com/redux-observable/redux-observable). This library will soon be deprecated as soon as the API is close enough to make the transition easier. With this latest release, we change the API of epics (in a non-breaking way) to make the signatures the same as redux-observable epics. 
+
+The last piece of the puzzle is SSR. I've created [react-redux-epic](https://github.com/BerkeleyTrue/react-redux-epic) to add SSR to Redux Observable in the same fashion as Redux-Epic. 
+
 ## Current Async story in Redux
 
 There are currently two different modes of handling side-effects in Redux. The
@@ -39,11 +44,11 @@ just wait for new actions from our observables and dispatch as normal.
     * Allows Redux-Epic to offer a smaller API surface
     * Allows us to easily do server side rendering with data pre-fetching
 
-* The Saga approach is a cleaner API
+* The Epic approach is a cleaner API
   * Action creators are plain map functions. In other words, they take in data
     and output actions
   * Components are can be plain mapping functions. Take in data and output html.
-  * Complex/Async application logic lives in sagas.
+  * Complex/Async application logic lives in epics.
 
 * Server Side Rendering depends on async side-effects, which is why it's built into
   Redux-Epic
@@ -60,15 +65,15 @@ npm install --save redux-epic
 
 ## Basic Usage
 
-Let's create a Saga, a function that returns an observable stream of actions,
+Let's create a Epic, a function that returns an observable stream of actions,
 that handles fetching user data
 
 ```js
-// fetch-user-saga.js
+// fetch-user-epic.js
 import { Observable } from 'rx';
 import fetchUser from 'my-cool-ajax-library';
 
-export default function tickSaga(actions$) {
+export default function tickEpic(actions$) {
   return action$
     // only listen for the action we care about
     // this will be our trigger
@@ -86,16 +91,16 @@ export default function tickSaga(actions$) {
 }
 ```
 
-Now to start using your newly created saga:
+Now to start using your newly created epic:
 
 ```js
 import { createEpic } from 'redux-epic';
 import { createStore, applyMiddleware } from 'redux'
 import myReducer from './my-reducer'
-import fetchUserSaga from './fetch-user-saga'
+import fetchUserEpic from './fetch-user-epic'
 
-// createEpic can take any number of sagas
-const epicMiddleware = createEpic(fetchUserSaga);
+// createEpic can take any number of epics
+const epicMiddleware = createEpic(fetchUserEpic);
 
 const store = createStore(
   myReducer,
@@ -104,8 +109,8 @@ const store = createStore(
 
 ```
 
-And that's it! Your saga is now connected to redux store.
-Now to trigger your saga, you just need to dispatch the
+And that's it! Your epic is now connected to redux store.
+Now to trigger your epic, you just need to dispatch the
 'FETCH_USER' action!
 
 ## [Docs](docs)

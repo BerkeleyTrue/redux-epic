@@ -7,24 +7,26 @@ This document uses [rtype](https://github.com/ericelliott/rtype) for type signat
 Creates an epic middleware to be passed into Redux createStore
 
 ```js
-Saga(
-  actions$: Observable[ ...Action ],
-  getState: () => Object,
+Epic(
+  actions: Observable[ ...Action ],
+  {
+    getState: () => Object
+  },
   dependencies: Object
-) => Observable[ ...Action|Void ]
+) => Observable[ ...Any ]
 
 interface EpicMiddleware {
   ({
     dispatch: Function,
     getState: Function
   }) => ( (next: Function) => (action: Action) => Action ),
-  // used to dispose sagas
+  // used to dispose epics
   dispose() => Void
 }
 
 interface createEpic {
-  (dependencies: Object, ...sagas: [ Saga... ]) => EpicMiddleware
-  (...sagas: [ Saga... ]) => EpicMiddleware
+  (dependencies: Object, ...epics: [ Epic... ]) => EpicMiddleware
+  (...epics: [ Epic... ]) => EpicMiddleware
 }
 ```
 
@@ -95,7 +97,7 @@ Used when you want your server-side rendered app to be fully populated.
 
 Ensures all the stores are populated before running React's renderToString internally.
 This will end the actions$ observable and wait for
-all of the sagas to complete.
+all of the epics to complete.
 
 ```js
 renderToString(Component: ReactComponent, epicMiddleware: EpicMiddleware) => Observable[String]
