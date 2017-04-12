@@ -2,6 +2,8 @@ import invariant from 'invariant';
 import warning from 'warning';
 import { CompositeDisposable, Observable, Subject } from 'rx';
 
+import ofType from './of-type.js';
+
 function addOutputWarning(source, name) {
   let actionsOutputWarned = false;
   return source.do(action => {
@@ -88,6 +90,7 @@ export default function createEpic(dependencies, ...epics) {
       compositeDisposable = new CompositeDisposable();
       actions = new Subject();
       lifecycle = new Subject();
+      actions.ofType = ofType;
       const epicSubscription = Observable
         .from(epics)
         // need to test for pass-through sagas
