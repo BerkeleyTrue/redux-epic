@@ -72,7 +72,7 @@
     "coveralls": "^2.11.9",
     "enzyme": "^2.3.0",
     "eslint": "^3.0.0",
-    "eslint-plugin-react": "^5.0.1",
+    "eslint-plugin-react": "^6.1.2",
     "eslint-tap": "^1.1.0",
     "nyc": "^7.1.0",
     "react-addons-test-utils": "^15.2.0",
