@@ -9,7 +9,7 @@
     "src": "src"
   },
   "scripts": {
-    "lint": "eslint --format node_modules/eslint-tap/tap.js .",
+    "lint": "eslint --format node_modules/eslint-tap .",
     "test": "BABEL_ENV=test nyc ava",
     "report": "nyc report --reporter=html",
     "cover": "nyc report --reporter=text-lcov | coveralls",
@@ -30,13 +30,7 @@
     "require": [
       "babel-register"
     ],
-    "babel": {
-      "presets": [
-        "es2015",
-        "react",
-        "stage-0"
-      ]
-    }
+    "babel": "inherit"
   },
   "repository": {
     "type": "git",

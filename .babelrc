@@ -1,23 +1,18 @@
 {
-    "presets": [
-        "es2015",
-        "react",
-        "stage-0"
-    ],
-    "ignore": [
-        "test/*.js"
-    ],
-    "env": {
-        "test": {
-            "sourceMaps": "inline",
-            "plugins": [
-                [ "istanbul" ]
-            ]
-        },
-        "production": {
-            "plugins": [
-                "babel-plugin-dev-expression"
-            ]
-        }
+  "presets": [
+    "es2015",
+    "react",
+    "stage-0"
+  ],
+  "env": {
+    "test": {
+      "sourceMaps": "inline",
+      "plugins": [ "istanbul" ]
+    },
+    "production": {
+      "plugins": [
+        "babel-plugin-dev-expression"
+      ]
     }
+  }
 }
