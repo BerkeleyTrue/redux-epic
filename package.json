@@ -12,6 +12,7 @@
     "lint": "eslint --format node_modules/eslint-tap .",
     "pretest": "npm run lint",
     "test": "BABEL_ENV=test nyc ava",
+    "test:watch": "BABEL_ENV=test nyc ava --watch --fail-fast",
     "cover": "nyc report --reporter=html",
     "cover:alls": "nyc report --reporter=text-lcov | coveralls",
     "prebuild": "npm run test",
