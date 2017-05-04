@@ -1,5 +1,7 @@
 # Redux-Epic
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/BerkeleyTrue/redux-epic.svg)](https://greenkeeper.io/)
+
 > Better async in Redux with SSR data pre-fetching
 
 Redux-Epic is a library built to do complex/async side-effects and
