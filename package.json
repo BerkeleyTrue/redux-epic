@@ -12,8 +12,8 @@
     "lint": "eslint --format node_modules/eslint-tap .",
     "pretest": "npm run lint",
     "test": "BABEL_ENV=test nyc ava",
-    "report": "nyc report --reporter=html",
-    "cover": "nyc report --reporter=text-lcov | coveralls",
+    "cover": "nyc report --reporter=html",
+    "cover:alls": "nyc report --reporter=text-lcov | coveralls",
     "prebuild": "npm run test",
     "build": "BABEL_ENV=production babel src --out-dir lib",
     "prepublish": "npm run build"
