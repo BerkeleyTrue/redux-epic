@@ -283,18 +283,3 @@ test('warn when non-action elements are sent', t => {
   );
   console.error.restore();
 });
-
-test('adds ofType instance method', t => {
-  const epic = (actions) => {
-    t.is(
-      typeof actions.ofType,
-      'function'
-    );
-    return Observable.of(null, null);
-  };
-  const epicMiddleware = createEpic(epic);
-  const dispatch = x => x;
-  const getState = () => 4;
-  epicMiddleware({ dispatch, getState })(x => x)({ type: 'foo' });
-  epicMiddleware.end();
-});
