@@ -101,7 +101,7 @@ export default function createEpic(dependencies, ...epics) {
           invariant(
             Observable.isObservable(result),
             `
-              Epics should returned an observable but got %s
+              Epics should return an observable but got %s
               Check the ${name} epic
             `,
             result
