@@ -9,7 +9,7 @@
     "src": "src"
   },
   "scripts": {
-    "lint": "eslint --format node_modules/eslint-tap .",
+    "lint": "eslint .",
     "pretest": "npm run lint",
     "test": "BABEL_ENV=test nyc ava",
     "test:watch": "BABEL_ENV=test nyc ava --watch --fail-fast",
@@ -70,7 +70,6 @@
     "enzyme": "^2.3.0",
     "eslint": "^3.0.0",
     "eslint-plugin-react": "^7.0.0",
-    "eslint-tap": "^2.0.0",
     "nyc": "^10.2.0",
     "react-addons-test-utils": "^15.2.0",
     "redux": "^3.5.2",
