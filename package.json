@@ -76,7 +76,7 @@
     "sinon": "^2.1.0"
   },
   "dependencies": {
-    "debug": "^2.2.0",
+    "debug": "^3.0.0",
     "invariant": "^2.2.1",
     "react": "^15.0.0 || ^0.14.3",
     "react-addons-shallow-compare": "^15.0.1 || ^0.14.3",
