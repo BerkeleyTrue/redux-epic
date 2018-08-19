@@ -75,7 +75,7 @@ that handles fetching user data
 import { Observable } from 'rx';
 import fetchUser from 'my-cool-ajax-library';
 
-export default function tickEpic(actions$) {
+export default function fetchUserEpic(actions$) {
   return action$
     // only listen for the action we care about
     // this will be our trigger
